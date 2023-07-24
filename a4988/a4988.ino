@@ -1,9 +1,19 @@
-const int DIR  = 6;
-const int STEP = 7;
+const int SW_R = 4;
+const int SW_L = 5;
+
+const int DIR  = 8;
+const int STEP = 9;
 
 int i = 0;
+int val_R = 0;
+int val_L = 0;
 
 void setup() {
+  Serial.begin(9600);
+  
+  pinMode(SW_R, INPUT);
+  pinMode(SW_L, INPUT);
+  
   pinMode(DIR, OUTPUT);
   pinMode(STEP, OUTPUT);
   
@@ -11,24 +21,32 @@ void setup() {
   digitalWrite(STEP, LOW);
 }
 
+void step(){
+  for(i = 0; i <= 400; i++){
+    digitalWrite(STEP, HIGH);
+    delayMicroseconds(2000);
+    digitalWrite(STEP, LOW);
+    delayMicroseconds(2000);
+  }
+}
+
 void loop() {
-  digitalWrite(DIR, HIGH);
-
-  for (int i=0; i<200; i++) {
-    digitalWrite(STEP, HIGH);
-    delayMicroseconds(2000);
-    digitalWrite(STEP, LOW);
-    delayMicroseconds(2000);
+  val_R = digitalRead(SW_R);
+  val_L = digitalRead(SW_L);
+   
+  if(val_R == HIGH && val_L == HIGH){
+    Serial.print("STOP \n");
   }
-  delay(1000);
+  else if(val_R == HIGH){
+    digitalWrite(DIR, LOW);
+    Serial.print("R \n");
 
-  digitalWrite(DIR, LOW);
- 
-  for (int i=0; i<400; i++) {
-    digitalWrite(STEP, HIGH);
-    delayMicroseconds(5000);
-    digitalWrite(STEP, LOW);
-    delayMicroseconds(5000);
+    step();
   }
-  delay(1000);
+  else if(val_L == HIGH){
+    digitalWrite(DIR, HIGH);
+    Serial.print("L \n");
+    
+    step();
+  }
 }
